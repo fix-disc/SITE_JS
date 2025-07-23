@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>CHAT</title>
+        <link id="css" rel="stylesheet" href="../css/style.css">
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+        
+        
+        <script src="../js/behaviour.js"></script>
+    </head>
+    <body onload="img_modo()">
+        <div id="contenido" class="contenido">
+
+            <!-- HEADER -->
+            <div class="header1">
+                <div class="div_logo" onmousedown="show_menu('menu1')">
+                    <img src="../img/logo_1.png" width="95%" style="margin-top: 3px;">
+                </div>
+                <div class="div_user" onmousedown="show_menu('menu2')">
+                    <div class="ball_usuario">
+                        <img class="img_usuario" src="../img/user.png" width="30">
+                    </div>
+                    <ul class="div_user_data">
+                        <i style="font-size:0.8rem; font-style: normal;">Alejandro Cavieres M.</i><br>
+                        <div class="ball_activo">&nbsp;</div><i style="font-size:0.7rem; font-style: normal;">&nbsp;&nbsp;Activo Ahora</i>
+                        <div class="arrow-down"><i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
+                    </ul>
+                </div>
+                <div class="div_solicitudes">
+                    <div style="width: 28px; height: 30px;">
+                        <div class="ball_atencion">50</div>
+                    </div>
+                    SOLICITUDES 
+                </div>
+                
+            </div>
+            <div class="shadow1"></div>
+
+            <!-- MENNU 1 -->
+            <div id="menu1" class="menu1"><br>
+                <ul style="font-size: 10px;">
+                    <div style="height: 2px;">&nbsp;</div>
+                    <div class="menu-item" onclick="display_zona('subm_1')">
+                        <i class="fa fa-weixin"></i>&nbsp;&nbsp;Conversaciones
+                        <i class="fa fa-sort-down arrow-down" aria-hidden="true"></i>
+                    </div>
+                    <div id="subm_1" class="div_subm">
+                        <div class="shadow2" style="height: 10px;"></div>
+                        <div style="width: 100%; height: 3px;"></div>
+                        <div class="sub-menu" onclick="lista_conversaciones()"><i class="fa fa-arrows" aria-hidden="true"></i>Todas</div>
+                        <div class="sub-menu"><i class="fa fa-clock-o" aria-hidden="true"></i>Pendientes</div>
+                        <div class="sub-menu"><i class="fa fa-window-restore" aria-hidden="true"></i>Abiertas</div>
+                        <div class="sub-menu"><i class="fa fa-window-close-o" aria-hidden="true"></i>Cerradas</div>
+                    </div>
+                    <div class="menu-item"><i class="fa fa-user-circle-o"></i>&nbsp;&nbsp;Usuarios<i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
+                    <div class="menu-item"><i class="fa fa-bar-chart"></i>&nbsp;&nbsp;Reportes<i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
+                    <div class="menu-item"><i class="fa fa-table"></i>&nbsp;&nbsp;Tablas<i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
+                    <div class="menu-item"><i class="fa fa-cogs"></i>&nbsp;Integraciones<i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
+                    <div class="menu-item" onclick="display_zona('subm_5')">
+                        <i><img id="bot_icon" src="../img/bot.png" class="bot_icon"></i>&nbsp;Easy BOT
+                        <i class="fa fa-sort-down arrow-down" aria-hidden="true"></i>
+                    </div>
+                    <div id="subm_5" class="div_subm">
+                        <div class="shadow2" style="height: 10px;"></div>
+                        <div style="width: 100%; height: 3px;"></div>
+                        <div class="sub-menu"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Diseño</div>
+                        <div class="sub-menu"><i class="fa fa-clock-o" aria-hidden="true"></i>Horario</div>
+                    </div> 
+                    
+                </ul>
+            </div>
+
+            <!-- MENNU 2 -->
+            <div id="menu2" class="menu2">
+                <div class="line0"></div>
+                <div class="line"></div>
+                <ul style="font-size: 10px;">
+                    <div style="height: 2px;">&nbsp;</div>
+                    <div class="menu-item" onclick="open_1('modal1', 'block');get_config()"><i class="fa fa-cog"></i>&nbsp;&nbsp;Configuración</div>
+                    <div id="modo" class="menu-item" onclick="switch_1()"><i class="fa fa-adjust"></i>&nbsp;&nbsp;Modo Claro</div>
+                    <div class="menu-item" onclick="javascript:window.location.href='../login.html'"><i class="fa fa-pause-circle"></i>&nbsp;&nbsp;Pausar</div>
+                    <div class="menu-item" onclick="javascript:window.location.href='../login.html'"><i class="fa fa-power-off"></i>&nbsp;&nbsp;Salir</div>
+                </ul>
+            </div>
+
+            <!-- CONTENIDO -->
+            <div id="contenedor" class="contenedor" onmousedown="hide_all()">
+
+            </div>
+
+            <!-- MODAL 1 -->
+            <div id="modal1" class="modal1">
+                <div style="height: 100%; display: contents;">
+
+                    <div id="close" class="close" onclick="close_1('modal1')"><img src="../img/close_icon.png" width="20px" height="20px"></div>
+                    <div class="title" style="width: 100%;">
+                        <i class="fa fa-cog" style="font-size: 1.4rem;"><span>&nbsp;&nbsp;Configuración</span></i>
+                    </div>
+                    <div class="line" style="position: relative; width: 100%; margin-top:5px;"></div>
+                    <div class="line0" style="position: relative; width: 100%;"></div>
+                    <div style="width: 100%; height: 10px;"></div>
+
+                    
+                    <div style="width: 100%; height: 20px; display: block;">
+
+                        <table width="100%">
+                            <tr>
+                                <td width="30%" style="max-width: 100px; vertical-align: text-top;">
+                                    <div class="title2_menu" onclick="load_div('cfg_content','cfg_general.html')"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp;General</div>
+                                    <div class="title2_menu" onclick="load_div('cfg_content','cfg_canales.html'); load_cfgcanales();"><i class="fa fa-rss" aria-hidden="true"></i>&nbsp;&nbsp;Canales</div>
+                                    <div class="title2_menu" onclick="load_div('cfg_content','cfg_canales.html')"><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp;&nbsp;Horarios</div>
+                                </td>
+                                <td>
+                                    <div id="cfg_content" style="width: 100%; max-height: 260px; float:left; overflow: auto; overflow-y: scroll; padding-right: 20px;">
+                                        <div>
+                                            Selecciona una opción
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+                    <div id="mod_footer" class="mod_footer" style="position: absolute;">
+                        <div class="line" style="position: relative; width: 100%;"></div>
+                        <div class="line0" style="position: relative; width: 100%;margin-bottom: 15px;"></div>
+                        <div class="bot_save">GUARDAR</div>
+                        <div class="bot_cancel" onclick="close_1('modal1')">CANCELAR</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL PHONE -->
+        <div id="modal2" class="modal2">
+            <div style="height: 100%; display: contents;">
+
+                <div id="close" class="close" onclick="close_1('modal2')"><img src="../img/close_icon.png" width="20px" height="20px"></div>
+                <div class="title2" style="width: 100%;">
+                    <i class="fa fa-mobile" style="font-size: 1.8rem;"></i><span>&nbsp;&nbsp;Conversación</span>&nbsp;&nbsp;|&nbsp;&nbsp;<span id="user_span" style="font-size: 10px;">&nbsp;</span>
+                </div>
+                <div class="line" style="position: relative; width: 100%; margin-top:5px;"></div>
+                <div class="line0" style="position: relative; width: 100%;"></div>
+                <div style="width: 100%; height: 10px;"></div>
+
+                
+                <table width="100%">
+                    <tr>
+
+                        <td>
+                            <div id="phone_screen" class="phone_screen" style="width: 100%; max-height: 330px; height:330px; float:left; overflow: auto; overflow-y: scroll;">
+
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+                <div id="mod_footer" class="mod_footer" style="position: absolute;">
+                    <div class="line" style="position: relative; width: 100%;"></div>
+                    <div class="line0" style="position: relative; width: 100%;"></div>
+                    <div style="margin: 10px;">
+                        <div class="bot_save">ENVIAR</div>
+                        <input type="text" class="input1" />
+                    </div>
+                    
+                </div>
+
+            </div>
+        </div>
+        
+    </div>
+
+
+    </body>
+</html>
+<script src="../js/services.js"></script>
+<script>
+    was = {}
+    igs = {}
+    fbs = {}
+    tws = {}
+    tgs = {}
+    wchs = {}
+    canal = []
+    id_can = []
+    token_can = []
+    
+    for (v=1;v<7;v++){
+        id_can[v] = ""
+        token_can[v] = ""
+    }
+
+    async function get_config(){
+        await get_canales()
+        .then(function(res){
+            if(res.length == 0){
+                console.log(res)
+            }else{
+                console.log(res)
+                res.map((ele) => (ele.id_canal == "1")? canal.push({"id" : ele.id, "ide_canal" : ele.ide_canal, "token" : ele.token}) : null)
+                was["canales"] = canal; canal = []
+                res.map((ele) => (ele.id_canal == "2")? canal.push({"id" : ele.id, "ide_canal" : ele.ide_canal, "token" : ele.token}) : null)
+                igs["canales"] = canal; canal = []
+                res.map((ele) => (ele.id_canal == "3")? canal.push({"id" : ele.id, "ide_canal" : ele.ide_canal, "token" : ele.token}) : null)
+                fbs["canales"] = canal; canal = []
+                res.map((ele) => (ele.id_canal == "4")? canal.push({"id" : ele.id, "ide_canal" : ele.ide_canal, "token" : ele.token}) : null)
+                tws["canales"] = canal; canal = []
+                res.map((ele) => (ele.id_canal == "5")? canal.push({"id" : ele.id, "ide_canal" : ele.ide_canal, "token" : ele.token}) : null)
+                tgs["canales"] = canal; canal = []
+                res.map((ele) => (ele.id_canal == "6")? canal.push({"id" : ele.id, "ide_canal" : ele.ide_canal, "token" : ele.token}) : null)
+                wchs["canales"] = canal; canal = []
+                
+                
+
+                console.log("WAS: " + JSON.stringify(was))
+                console.log("IGS: " + JSON.stringify(igs))
+                console.log("tgs: " + JSON.stringify(tgs))
+            }}
+        )
+    }
+
+    function load_cfgcanales(){
+        setTimeout(function(){
+            was.length != "0"? (obj = document.getElementById('gen_opt1'), obj.className = "fa fa-toggle-on on") : (obj = document.getElementById('gen_opt1'), obj.className = "fa fa-toggle-on of")
+                obj = document.getElementById("tabla_canal_1")
+                filas = "";
+                was.canales.map((ele, index) => {
+                    id_can[1] = ele.ide_canal
+                    token_can[1] = ele.token
+                    token1 = ele.token.length>20 ? ele.token.substring(0,20)+'...' : ele.token
+                    hidden = ele.token.length>20 ? '<input type="hidden" id="hidden_token' + (parseInt(index) + 1) +'" value="' + ele.token + '">' : ""
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px;"><i class="fa fa-pencil-square-o icon_edit" aria-hidden="true"></i>&nbsp;ID CANAL: </td><td id="can1_id' + (parseInt(index) + 1) + '">' + ele.ide_canal + '</td></tr>'
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px; word-wrap:break-word;overflow-wrap: break-word;"><i class="fa fa-pencil-square-o icon_edit" aria-hidden="true" onmousedown="edita_campo(\'can1_token_' + (parseInt(index) + 1) + '\',\'token\',\'' + ele.id + '\')"></i>&nbsp;TOKEN: ' + hidden + '</td><td id="can1_token_' + (parseInt(index) + 1) + '">' + token1 + '</td></tr>'
+                })
+                obj.innerHTML = filas;
+            igs.length != "0"? (obj = document.getElementById('gen_opt2'), obj.className = "fa fa-toggle-on on") : (obj = document.getElementById('gen_opt2'), obj.className = "fa fa-toggle-on of")
+                obj = document.getElementById("tabla_canal_2")
+                filas = "";
+                igs.canales.map((ele, index) => {
+                    id_can[2] = ele.ide_canal
+                    token_can[2] = ele.token
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px;"><i class="fa fa-pencil-square-o icon_edit" aria-hidden="true"></i>&nbsp;ID CANAL: </td><td id="canal' + (parseInt(index) + 1) + '_id">' + ele.ide_canal + '</td></tr>'
+                    token1 = ele.token.length>20 ? ele.token.substring(0,20)+'...' : ele.token
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px; word-wrap:break-word;overflow-wrap: break-word;"><i class="fa fa-pencil-square-o icon_edit" aria-hidden="true"></i>&nbsp;TOKEN: </td><td id="canal2' + (parseInt(index) + 1) + '_token">' + token1 + '</td></tr>'
+                })
+                obj.innerHTML = filas;
+            fbs.length != "0"? (obj = document.getElementById('gen_opt3'), obj.className = "fa fa-toggle-on on") : (obj = document.getElementById('gen_opt3'), obj.className = "fa fa-toggle-on of")
+                obj = document.getElementById("tabla_canal_3")
+                filas = "";
+                fbs.canales.map((ele, index) => {
+                    id_can[3] = ele.ide_canal
+                    token_can[3] = ele.token
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px;">ID CANAL: </td><td id="canal' + (parseInt(index) + 1) + '_id">' + ele.ide_canal + '</td></tr>'
+                    token1 = ele.token.length>20 ? ele.token.substring(0,20)+'...' : ele.token
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px; word-wrap:break-word;overflow-wrap: break-word;"><i class="fa fa-pencil-square-o icon_edit" aria-hidden="true"></i>&nbsp;TOKEN: </td><td id="canal' + (parseInt(index) + 1) + '_token">' + token1 + '</td></tr>'
+                })
+                obj.innerHTML = filas;
+            tws.length != "0"? (obj = document.getElementById('gen_opt4'), obj.className = "fa fa-toggle-on on") : (obj = document.getElementById('gen_opt4'), obj.className = "fa fa-toggle-on of")
+                obj = document.getElementById("tabla_canal_4")
+                filas = "";
+                tws.canales.map((ele, index) => {
+                    id_can[4] = ele.ide_canal
+                    token_can[4] = ele.token
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px;">ID CANAL: </td><td id="canal' + (parseInt(index) + 1) + '_id">' + ele.ide_canal + '</td></tr>'
+                    token1 = ele.token.length>20 ? ele.token.substring(0,20)+'...' : ele.token
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px; word-wrap:break-word;overflow-wrap: break-word;"><i class="fa fa-pencil-square-o icon_edit" aria-hidden="true"></i>&nbsp;TOKEN: </td><td id="canal' + (parseInt(index) + 1) + '_token">' + token1 + '</td></tr>'
+                })
+                obj.innerHTML = filas;
+            tgs.length != "0"? (obj = document.getElementById('gen_opt5'), obj.className = "fa fa-toggle-on on") : (obj = document.getElementById('gen_opt5'), obj.className = "fa fa-toggle-on of")
+                obj = document.getElementById("tabla_canal_5")
+                filas = "";
+                tgs.canales.map((ele, index) => {
+                    id_can[5] = ele.ide_canal
+                    token_can[5] = ele.token
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px;">ID CANAL: </td><td id="canal' + (parseInt(index) + 1) + '_id">' + ele.ide_canal + '</td></tr>'
+                    token1 = ele.token.length>20 ? ele.token.substring(0,20)+'...' : ele.token
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px; word-wrap:break-word;overflow-wrap: break-word;"><i class="fa fa-pencil-square-o icon_edit" aria-hidden="true"></i>&nbsp;TOKEN: </td><td id="canal' + (parseInt(index) + 1) + '_token">' + token1 + '</td></tr>'
+                })
+                obj.innerHTML = filas;
+            wchs.length != "0"? (obj = document.getElementById('gen_opt6'), obj.className = "fa fa-toggle-on on") : (obj = document.getElementById('gen_opt6'), obj.className = "fa fa-toggle-on of")
+                obj = document.getElementById("tabla_canal_6")
+                filas = "";
+                wchs.canales.map((ele, index) => {
+                    id_can[6] = ele.ide_canal
+                    token_can[6] = ele.token
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px;">ID CANAL: </td><td id="canal' + (parseInt(index) + 1) + '_id">' + ele.ide_canal + '</td></tr>'
+                    token1 = ele.token.length>20 ? ele.token.substring(0,20)+'...' : ele.token
+                    filas += '<tr><td style="width: 27px;"></td><td style="width: 60px; word-wrap:break-word;overflow-wrap: break-word;"><i class="fa fa-pencil-square-o icon_edit" aria-hidden="true"></i>&nbsp;TOKEN: </td><td id="canal' + (parseInt(index) + 1) + '_token">' + token1 + '</td></tr>'
+                })
+                obj.innerHTML = filas;
+                
+
+        }, 100)
+    }
+
+    function edita_campo(obj, campo, id){
+        obj = document.getElementById(obj);
+        if(document.getElementById("hidden_"+ campo + id) != null){
+            hidden = document.getElementById("hidden_"+ campo + id)
+            value = hidden.value;
+        }else{
+            value = obj.innerHTML;
+        }
+        obj.innerHTML = '<input type="text" class="hide_input" id="hide_input1" onblur="mod_canal(\'' + campo + '\',this.value, \'' + id + '\')" value="' + value + '"/>';
+        
+        setTimeout(() => document.getElementById("hide_input1").focus(), 200)
+        
+    }
+
+    async function mod_canal(campo, value, id){
+        await post_canales(campo, value, id)
+        .then(function(res){
+            console.log("RES: " + JSON.stringify(res));
+            //console.log("CAMPO: " + campo);
+            //console.log("VALUE: " + value);
+            //console.log("ID: " + id);
+            get_config()
+            load_cfgcanales();
+        });
+    }
+
+    async function lista_conversaciones(){
+        await get_conversaciones()
+        .then(function(res){
+            //console.log("RES lista_conversaciones:" + JSON.stringify(res));
+            titulo = '<h1 style="font-size:15px"><i class="fa fa-weixin"></i>&nbsp;&nbsp;Conversaciones</h1><br>';
+            html = crea_tabla(res,titulo,["30","30"]);
+            document.getElementById("contenedor").innerHTML = html;
+        })
+    }
+</script>
