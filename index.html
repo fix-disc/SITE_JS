@@ -10,47 +10,84 @@
     <body>
         <div class="wrapper">
             <section class="form signup">
-                <header>RealTime</header>
-                    <form action="#">
-                        <div class="name-details">
-                            <div class="field input">
-                                <label>Nombre</label>
-                                <input type="text" placeholder="Ingrese nombre">
-                            </div>
-                            <div class="field input">
-                                <label>Apellido</label>
-                                <input type="text" placeholder="Ingrese apellido">
-                            </div>
-                        </div>
+                <header>
+                    RealTime
+                    <div id="loading" class="loading"><img src="img/loading.gif" width="120"></div>
+                </header>
+                    <form action="login.php" method="post">
                         <div class="field input">
                             <label>Email</label>
-                            <input type="text" placeholder="Ingrese email">
+                            <input id="user" name="user" type="text" placeholder="Ingrese email">
                         </div>
-                        <div class="field image">
-                            <div>
-                                <label>Seleccione una imagen</label><br>
-                                <table width="100%">
-                                    <tr>
-                                        <td>
-                                            <div class="fileinputs">
-                                                <input type="file" class="file" />
-                                                <div class="fakefile">
-                                                    <div><i class="fas fa-user-circle" style="position: relative; right: 0px; font-size: 35px;"></i></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
+                        <div class="field input">
+                            <label>Password</label>
+                            <input id="pass" name="pass" type="text" placeholder="Ingrese clave">
+                            <i class="fas fa-eye"></i>
                         </div>
-                        <div class="error-txt">Error Message</div>
+                        <div id="mensaje1" class="error-txt">Error Message</div>
                         <div class="field button">
-                            <input type="submit" value="Ingresar">
+                            <input type="button" value="Ingresar" onclick="login()">
                         </div>
                         
                     </form>
-                    <div class="link">Ya tienes una cuenta ? <a href="login.html">&nbsp;Ingresar&nbsp;</a></div>
+                    <div class="link">No tienes una cuenta ? <a href="index.html">&nbsp;Crear cuenta&nbsp;</a></div>
             </section>
         </div>
     </body>
 </html>
+<script src="js/api.js"></script>
+<script lang="javascript">
+
+env = "PROD"; // PROD or DEV
+document.addEventListener("keypress", function(e){
+    if(e.keyCode == 13){
+        login();
+    }
+});
+
+async function login(){
+    user = document.getElementById("user").value;
+    pass = document.getElementById("pass").value;
+
+    if(user=="" || pass==""){
+        document.getElementById("mensaje1").innerHTML = "Debe ingresar usuario y password";
+        document.getElementById("mensaje1").style.visibility = "visible";
+        return
+    }else{
+        document.getElementById("loading").style.visibility = "visible";
+        await get_users(user,pass).then(
+            function(res){valida(res)}
+        )
+    }
+
+    
+}
+
+function valida(res){
+    document.getElementById("loading").style.visibility = "hidden";
+    console.log("RES: " + JSON.stringify(res));
+    if(res.length == 0){
+        document.getElementById("mensaje1").className = "error-txt";
+        document.getElementById("mensaje1").innerHTML = "Usuario y/o clave incorrecto";
+        document.getElementById("mensaje1").style.visibility = "visible";
+        setTimeout(function(){document.getElementById("mensaje1").style.visibility = "hidden";}, 1500);
+    }else{
+        data = res[0];
+        document.getElementById("mensaje1").className = "right-txt";
+        document.getElementById("mensaje1").innerHTML = "Bienvenido "+data.nombre+" "+data.apellidop;
+        document.getElementById("mensaje1").style.visibility = "visible";
+        setTimeout(function(){
+            document.getElementById("mensaje1").style.visibility = "hidden";
+            if(env == "PROD"){
+                location.replace('https://gestor-it.com/libroquejas/site_js/site/');
+            }
+            if(env == "DEV"){
+                location.replace('https://localhost/SITE_JS/site/');
+            }
+            
+        }, 1500);
+        
+    }
+    
+}
+</script>
