@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>CHAT</title>
+        <title>LIBRO QUEJAS</title>
         <link id="css" rel="stylesheet" href="../css/style.css">
         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
@@ -12,13 +12,13 @@
         
         <script src="../js/behaviour.js"></script>
     </head>
-    <body onload="img_modo()">
+    <body>
         <div id="contenido" class="contenido">
 
             <!-- HEADER -->
             <div class="header1">
                 <div class="div_logo" onmousedown="show_menu('menu1')">
-                    <img src="../img/logo_1.png" width="95%" style="margin-top: 3px;">
+                    <img src="../img/logo_1.png" width="95%" style="margin-top: 3px;max-width: 50px;">
                 </div>
                 <div class="div_user" onmousedown="show_menu('menu2')">
                     <div class="ball_usuario">
@@ -45,31 +45,19 @@
                 <ul style="font-size: 10px;">
                     <div style="height: 2px;">&nbsp;</div>
                     <div class="menu-item" onclick="display_zona('subm_1')">
-                        <i class="fa fa-weixin"></i>&nbsp;&nbsp;Conversaciones
+                        <i class="fa fa-weixin"></i>&nbsp;&nbsp;Reclamos
                         <i class="fa fa-sort-down arrow-down" aria-hidden="true"></i>
                     </div>
                     <div id="subm_1" class="div_subm">
                         <div class="shadow2" style="height: 10px;"></div>
                         <div style="width: 100%; height: 3px;"></div>
-                        <div class="sub-menu" onclick="lista_conversaciones()"><i class="fa fa-arrows" aria-hidden="true"></i>Todas</div>
+                        <div class="sub-menu" onclick="abre_pag('reclamos.html')"><i class="fa fa-arrows" aria-hidden="true"></i>Todos</div>
                         <div class="sub-menu"><i class="fa fa-clock-o" aria-hidden="true"></i>Pendientes</div>
                         <div class="sub-menu"><i class="fa fa-window-restore" aria-hidden="true"></i>Abiertas</div>
                         <div class="sub-menu"><i class="fa fa-window-close-o" aria-hidden="true"></i>Cerradas</div>
                     </div>
                     <div class="menu-item"><i class="fa fa-user-circle-o"></i>&nbsp;&nbsp;Usuarios<i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
                     <div class="menu-item"><i class="fa fa-bar-chart"></i>&nbsp;&nbsp;Reportes<i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
-                    <div class="menu-item"><i class="fa fa-table"></i>&nbsp;&nbsp;Tablas<i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
-                    <div class="menu-item"><i class="fa fa-cogs"></i>&nbsp;Integraciones<i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
-                    <div class="menu-item" onclick="display_zona('subm_5')">
-                        <i><img id="bot_icon" src="../img/bot.png" class="bot_icon"></i>&nbsp;Easy BOT
-                        <i class="fa fa-sort-down arrow-down" aria-hidden="true"></i>
-                    </div>
-                    <div id="subm_5" class="div_subm">
-                        <div class="shadow2" style="height: 10px;"></div>
-                        <div style="width: 100%; height: 3px;"></div>
-                        <div class="sub-menu"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Diseño</div>
-                        <div class="sub-menu"><i class="fa fa-clock-o" aria-hidden="true"></i>Horario</div>
-                    </div> 
                     
                 </ul>
             </div>
@@ -180,5 +168,13 @@
 </html>
 <script src="../js/api.js"></script>
 <script>
-    
+
+async function llama_reclamos(){
+    await get_reclamos("").then(
+        function(res){alert(JSON.stringify(res))}
+    )
+
+}
+
+
 </script>

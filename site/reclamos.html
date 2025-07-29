@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>LIBRO QUEJAS</title>
+        <link id="css" rel="stylesheet" href="../css/style.css">
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+        
+        
+        <script src="../js/behaviour.js"></script>
+    </head>
+    <body onload="llama_reclamos()">
+        <div id="contenido" class="contenido">
+
+            <table>
+                <tr>
+                    <td>RECLAMOS</td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+<script src="../js/api.js"></script>
+<script>
+
+async function llama_reclamos(){
+    await get_reclamos("").then(
+        function(res){
+            html = '<table class="tabla_datos">';
+            html += '<tr><th>ID</th><th>FECHA</th><th>USUARIO</th><th>RECLAMO</th></tr>';
+            data = res;
+            for(v=0;v<data.length;v++){
+                //console.log("data: " + JSON.stringify(data[v].id))
+                html += '<tr><td>' + data[v].id + '</td><td>' + data[v].fechahora + '</td><td>' + data[v].usuario + '</td><td>' + data[v].texto + '</td></tr>';
+            }
+            html += '</table>';
+           
+            document.getElementById("contenido").innerHTML = html;
+        }
+    )
+
+}
+
+
+</script>

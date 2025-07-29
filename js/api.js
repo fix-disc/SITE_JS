@@ -26,6 +26,14 @@ async function post_reclamo(reclamo){
     return data; 
 }
 
+async function get_reclamos(id){
+    url = base_url + "reclamos.php?id=" + id;
+    alert("URL: "+url)
+    let response = await fetch(url);
+    let data = await response.json();
+    return data; 
+}
+
 async function login_usuario(usuario, password){
     url = base_url + "usuarios.php?usuario=" + usuario + "&password=" + password;
     let response = await fetch(url);
