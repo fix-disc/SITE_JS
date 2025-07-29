@@ -12,7 +12,7 @@
         
         <script src="../js/behaviour.js"></script>
     </head>
-    <body>
+    <body onload="muestra_usuario()">
         <div id="contenido" class="contenido">
 
             <!-- HEADER -->
@@ -25,7 +25,7 @@
                         <img class="img_usuario" src="../img/user.png" width="30">
                     </div>
                     <ul class="div_user_data">
-                        <i style="font-size:0.8rem; font-style: normal;">Alejandro Cavieres M.</i><br>
+                        <i style="font-size:0.8rem; font-style: normal;"><span id="nombre"></span><span id="apellidop"></span></i><br>
                         <div class="ball_activo">&nbsp;</div><i style="font-size:0.7rem; font-style: normal;">&nbsp;&nbsp;Activo Ahora</i>
                         <div class="arrow-down"><i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
                     </ul>
@@ -169,10 +169,9 @@
 <script src="../js/api.js"></script>
 <script>
 
-async function llama_reclamos(){
-    await get_reclamos("").then(
-        function(res){alert(JSON.stringify(res))}
-    )
+async function muestra_usuario(){
+    document.getElementById("nombre").innerHTML = sessionStorage.getItem("nombre");
+    document.getElementById("apellidop").innerHTML = sessionStorage.getItem("apellidop")
 
 }
 

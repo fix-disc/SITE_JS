@@ -76,6 +76,8 @@ function valida(res){
         document.getElementById("mensaje1").className = "right-txt";
         document.getElementById("mensaje1").innerHTML = "Bienvenido "+data.nombre+" "+data.apellidop;
         document.getElementById("mensaje1").style.visibility = "visible";
+        sessionStorage.nombre = data.nombre;
+        sessionStorage.apellidop = data.apellidop;
         setTimeout(function(){
             document.getElementById("mensaje1").style.visibility = "hidden";
             if(env == "PROD"){
