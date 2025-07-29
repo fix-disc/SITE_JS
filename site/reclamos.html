@@ -30,11 +30,11 @@ async function llama_reclamos(){
     await get_reclamos("").then(
         function(res){
             html = '<table class="tabla_datos">';
-            html += '<tr><th>ID</th><th>FECHA</th><th>USUARIO</th><th>RECLAMO</th></tr>';
+            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">RECLAMO</th></tr>';
             data = res;
             for(v=0;v<data.length;v++){
                 //console.log("data: " + JSON.stringify(data[v].id))
-                html += '<tr><td>' + data[v].id + '</td><td>' + data[v].fechahora + '</td><td>' + data[v].usuario + '</td><td>' + data[v].texto + '</td></tr>';
+                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '</td><td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].texto + '</td></tr>';
             }
             html += '</table>';
            
