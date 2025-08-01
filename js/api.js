@@ -19,16 +19,13 @@ async function post_reclamo(reclamo){
         method:"POST",
         body: JSON.stringify(data1)
     };
-    alert("URL: " + url);
     let response = await fetch(url, options);
     let data = await response.json();
-    alert(JSON.stringify(data));
     return data; 
 }
 
 async function get_reclamos(id){
     url = base_url + "reclamos.php?id=" + id;
-    alert("URL: "+url)
     let response = await fetch(url);
     let data = await response.json();
     return data; 

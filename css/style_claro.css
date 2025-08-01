@@ -529,6 +529,7 @@ ul i{
     width: 100%;
     justify-content: center;
     border-spacing: 0px;
+    text-align: center;
 }
 .tabla_datos>th{
     background-color: #353535;

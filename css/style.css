@@ -117,6 +117,13 @@ form .name-details .field:last-child{
     text-align: right;
 }
 
+select{
+    background-color: #68696b;
+    color: #fff;
+    font-size: 12px;
+    margin: 2px;
+}
+
 input[type="file"] {
     position: relative;
     margin-top: 3px;
@@ -524,6 +531,7 @@ ul i{
     width: 100%;
     justify-content: center;
     border-spacing: 0px;
+    text-align: center;
 }
 
 .tabla_datos>th{

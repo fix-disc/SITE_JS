@@ -12,36 +12,62 @@
         
         <script src="../js/behaviour.js"></script>
     </head>
-    <body onload="llama_reclamos()">
+    <body onload="busca_reclamos()">
         <div id="contenido" class="contenido">
+            <label for="agno">AÑO</label><br>
+            <select id="agno" onchange="filtro_agno(this.value)">
+                <option value="0">Todos</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+            </select>&nbsp;&nbsp;TOTAL: <span id="total"></span><br><br>
+            <div id="datos">
 
-            <table>
-                <tr>
-                    <td>RECLAMOS</td>
-                </tr>
-            </table>
+            </div>
         </div>
     </body>
 </html>
 <script src="../js/api.js"></script>
 <script>
 
-async function llama_reclamos(){
+json_reclamos = [];
+async function busca_reclamos(){
     await get_reclamos("").then(
         function(res){
+            json_reclamos = res;
+            console.log("RECLAMOS: " + JSON.stringify(res))
             html = '<table class="tabla_datos">';
-            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">RECLAMO</th></tr>';
+            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th></tr>';
             data = res;
             for(v=0;v<data.length;v++){
                 //console.log("data: " + JSON.stringify(data[v].id))
-                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '</td><td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].texto + '</td></tr>';
+                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td></tr>';
             }
             html += '</table>';
            
-            document.getElementById("contenido").innerHTML = html;
+            document.getElementById("datos").innerHTML = html;
+            document.getElementById("total").innerHTML = data.length;
         }
     )
 
+}
+
+function filtro_agno(agno){
+    console.log("json: " + JSON.stringify(json_reclamos))
+    data = json_reclamos.filter((elem) => elem.fechahora.indexOf(agno)!=-1)
+
+    html = '<table class="tabla_datos">';
+    html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th></tr>';
+
+    for(v=0;v<data.length;v++){
+        //console.log("data: " + JSON.stringify(data[v].id))
+        html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td></tr>';
+    }
+    html += '</table>';
+
+    document.getElementById("datos").innerHTML = html;
+    document.getElementById("total").innerHTML = data.length;
 }
 
 

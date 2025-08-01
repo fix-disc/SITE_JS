@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>LIBRO QUEJAS</title>
+        <link id="css" rel="stylesheet" href="../css/style.css">
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+        
+        
+        <script src="../js/behaviour.js"></script>
+    </head>
+    <body onload="busca_usuarios()">
+        <div class="contenido">
+            
+        </div>
+        <div id="contenido" class="contenido">
+            <label for="agno">AÑO</label>
+            <select id="agno">
+                <option value="0">Todos</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+            </select>
+            <div id="datos">
+
+            </div>
+        </div>
+    </body>
+</html>
+<script src="../js/api.js"></script>
+<script>
+
+async function busca_usuarios(){
+    await get_users("","").then(
+        function(res){
+            console.log("USUARIOS: " + JSON.stringify(res))
+            html = '<table class="tabla_datos">';
+            html += '<tr><th class="th1">ID</th><th class="th1">RUT</th><th class="th1">NOMBRES</th><th class="th1">APELLIDOS</th><th class="th1">DEPTO.</th><th class="th1">USUARIO</th><th class="th1">CLAVE</th></tr>';
+            data = res;
+            for(v=0;v<data.length;v++){
+                //console.log("data: " + JSON.stringify(data[v].id))
+                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].rut + '</td><td class"td1">' + data[v].nombre + '<td class"td1">' + data[v].apellidop + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].usuario + '</td><td class"td1" style="text-align:left">' + data[v].clave + '</td></tr>';
+            }
+            html += '</table>';
+           
+            document.getElementById("datos").innerHTML = html;
+        }
+    )
+
+}
+
+
+</script>
