@@ -17,8 +17,10 @@
 
             <!-- HEADER -->
             <div class="header1">
-                <div class="div_logo" onmousedown="show_menu('menu1')">
-                    <img src="../img/logo_1.png" width="95%" style="margin-top: 3px;max-width: 50px;">
+                <div class="div_logo" onmousedown="show_menu('menu1')" style="width: 300px;">
+                    
+                    <img id="logo1" src="../img/LibroBlancoSinFondo.png" width="95%" style="margin-top: 3px;max-width: 80px; float: left;">
+                    <img id="logo2" src="../img/logo_innova_blanco.png" width="95%" style="margin-top: 3px;max-width: 90px; float: left;">
                 </div>
                 <div class="div_user" onmousedown="show_menu('menu2')">
                     <div class="ball_usuario">
@@ -30,12 +32,7 @@
                         <div class="arrow-down"><i class="fa fa-sort-down arrow-down" aria-hidden="true"></i></div>
                     </ul>
                 </div>
-                <div class="div_solicitudes">
-                    <div style="width: 28px; height: 30px;">
-                        <div class="ball_atencion">50</div>
-                    </div>
-                    SOLICITUDES 
-                </div>
+                
                 
             </div>
             <div class="shadow1"></div>
@@ -125,40 +122,7 @@
         </div>
 
         <!-- MODAL PHONE -->
-        <div id="modal2" class="modal2">
-            <div style="height: 100%; display: contents;">
-
-                <div id="close" class="close" onclick="close_1('modal2')"><img src="../img/close_icon.png" width="20px" height="20px"></div>
-                <div class="title2" style="width: 100%;">
-                    <i class="fa fa-mobile" style="font-size: 1.8rem;"></i><span>&nbsp;&nbsp;Conversación</span>&nbsp;&nbsp;|&nbsp;&nbsp;<span id="user_span" style="font-size: 10px;">&nbsp;</span>
-                </div>
-                <div class="line" style="position: relative; width: 100%; margin-top:5px;"></div>
-                <div class="line0" style="position: relative; width: 100%;"></div>
-                <div style="width: 100%; height: 10px;"></div>
-
-                
-                <table width="100%">
-                    <tr>
-
-                        <td>
-                            <div id="phone_screen" class="phone_screen" style="width: 100%; max-height: 330px; height:330px; float:left; overflow: auto; overflow-y: scroll;">
-
-                            </div>
-                        </td>
-                    </tr>
-
-                </table>
-                <div id="mod_footer" class="mod_footer" style="position: absolute;">
-                    <div class="line" style="position: relative; width: 100%;"></div>
-                    <div class="line0" style="position: relative; width: 100%;"></div>
-                    <div style="margin: 10px;">
-                        <div class="bot_save">ENVIAR</div>
-                        <input type="text" class="input1" />
-                    </div>
-                    
-                </div>
-
-            </div>
+        <div id="modal2" class="modal2" style="display: none;">
         </div>
         
     </div>

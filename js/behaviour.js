@@ -61,9 +61,13 @@ function img_modo(){
     obj = document.getElementById('css');
     sheet = document.getElementById('css').href.split('css/')[1];
     if(sheet == "style.css"){
-        document.getElementById("bot_icon").src = "../img/bot.png";
+        //document.getElementById("bot_icon").src = "../img/bot.png";
+        document.getElementById("logo1").src = "../img/LibroBlancoSinFondo.png";
+        document.getElementById("logo2").src = "../img/logo_innova_blanco.png";
     }else{
-        document.getElementById("bot_icon").src = "../img/bot_black.png";
+        //document.getElementById("bot_icon").src = "../img/bot_black.png";
+        document.getElementById("logo1").src = "../img/JS_sin_fondo.png";
+        document.getElementById("logo2").src = "../img/logo_innova_azul.png";
     }
 }
 
