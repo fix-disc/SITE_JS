@@ -25,7 +25,26 @@ async function post_reclamo(reclamo){
 }
 
 async function get_reclamos(id){
-    url = base_url + "reclamos.php?id=" + id;
+    if(id!=""){
+        url = base_url + "reclamos.php?id=" + id;
+    }else{
+        url = base_url + "reclamos.php";
+    }
+    let response = await fetch(url);
+    let data = await response.json();
+    return data; 
+}
+
+async function get_reclamos_agno(agno){
+    url = base_url + "reclamos.php?agno=" + agno;
+    alert(url)
+    let response = await fetch(url);
+    let data = await response.json();
+    return data; 
+}
+
+async function get_tipo_reclamo(){
+    url = base_url + "tipo_reclamos.php";
     let response = await fetch(url);
     let data = await response.json();
     return data; 

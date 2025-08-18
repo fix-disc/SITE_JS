@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>LIBRO QUEJAS</title>
+        <link id="css" rel="stylesheet" href="../css/style.css">
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+        
+        
+        <script src="../js/behaviour.js"></script>
+    </head>
+    <body onload="busca_reclamos();" onclick="hide_all()">
+        <div id="contenido1" class="contenido1">
+
+            <div style="width: 100%;">
+                <div id="agnos"></div>
+                
+                <div style="width: 100%;">
+                    <div style="position: relative; float:left; width: 350px;"> 
+                        <canvas
+                            id= "dona"
+                            class="ex-line-graph"
+                            data-chart="bar"
+                            width="350">
+                        </canvas>
+                    </div>
+                    <div style="position: relative;float:left"> 
+                        <canvas
+                            id= "linechart"
+                            class="ex-line-graph"
+                            data-chart="bar"
+                            width="600"
+                            height="300">
+                        </canvas>
+                    </div>
+                </div>
+                <div id="datos"></div>
+            </div>
+            
+            
+        </div>
+        
+    </body>
+</html>
+<script src="../js/api.js"></script>
+<script src="../js/chart1/chart1.js"></script>
+<!--
+<script src="../js/chart/jquery.min.js"></script>
+<script src="../js/chart/chart.js"></script>
+<script src="../js/chart/tablesorter.min.js"></script>
+<script src="../js/chart/toolkit.js"></script>
+<script src="../js/chart/application.js"></script>
+-->
+
+<script>
+
+json_reclamos = [];
+json_reclamos_now = [];
+agnos = [];
+tipos_reclamo = [];
+tipos_reclamo_nombres = [];
+tot_tipo_reclamo = 0;
+tot_tipo = [];
+graph_colors = [
+                '#ff4000', // Rojo
+                '#ff8000',  // Naranjo
+                '#ffbf00', // Nar claro
+                '#ffff00',  // Amarillo
+                '#bfff00',  // Verde lim
+                '#80ff00', // Verde Claro
+                '#00ff00', // Verde
+                '#00ffbf', // Ver Cel
+                '#00ffff', // Celeste
+                '#0080ff', // Azul
+                '#0000ff', // Azul Osc
+                ];
+DChart = "";
+LChart = "";
+
+async function busca_reclamos(){
+    await get_reclamos("").then(
+        function(res){
+            json_reclamos_now = json_reclamos = res;            
+            //console.log("RECLAMOS: " + JSON.stringify(res))
+            html = '<table class="tabla_datos">';
+            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th></tr>';
+            data = res;
+            for(v=0;v<data.length;v++){
+                //console.log("data: " + JSON.stringify(data[v].id))
+                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td></tr>';
+            }
+            html += '</table>';
+           
+            document.getElementById("datos").innerHTML = html;
+            llena_datos();
+        }
+    )
+
+}
+
+async function tipo_reclamos(){
+    await get_tipo_reclamo().then(
+        function(res){
+            data = res;
+            for(v=0;v<data.length;v++){
+                //console.log("data: " + JSON.stringify(data[v].id))
+                tipos_reclamo.push(data[v].id);
+                tipos_reclamo_nombres.push(data[v].nombre);
+            }
+            tot_tipo_reclamo = tipos_reclamo.length;
+        }
+    )
+
+}
+
+
+function llena_datos(){
+
+    html= '<label for="agno">AÑO</label><br>'
+    html+= '<select id="agno" onchange="filtro()">';
+    html+= '<option value="0" selected >Todos</option>';
+
+    for(v=0;v<json_reclamos.length;v++){
+        // LLENA AÑOS DISTINCT
+        if(agnos.indexOf(json_reclamos[v].fechahora.substring(0,4)) == -1){
+            agno = json_reclamos[v].fechahora.substring(0,4);
+            agnos.push(agno)
+        }
+        
+        //LLENA TIPOS RECLAMO DISTINCT
+        if(tipos_reclamo.indexOf(json_reclamos[v].tipo) == -1){
+            tipos_reclamo.push(json_reclamos[v].tipo);
+        }
+    }
+    
+    for (v=0; v<agnos.length; v++){
+        sele = "";
+        agno = agnos[v];
+        if(document.getElementById("agno")){
+            sel = document.getElementById("agno").value;
+            sele = "selected"
+            if(sel == agno){sele = "selected"}else{sele = ""}
+        }
+        html+='<option value="' + agno + '" ' + sele + '>' + agno + '</option>';
+    }
+    html+='</select>';
+    html+='&nbsp;&nbsp;TOTAL: <span id="total"></span><br><br>';
+    
+    document.getElementById("agnos").innerHTML= html;
+    document.getElementById("total").innerHTML = json_reclamos_now.length;
+    
+    var tot_tipo = [];
+    for(v=0; v<tipos_reclamo.length; v++){
+        tot_tipo[v] = json_reclamos_now.reduce((accumulator, item) => {
+            accumulator[item.tipo] = (accumulator[item.tipo] || 0) + 1;
+            return accumulator;
+        }, {});
+    }
+    carga_donutchart(tot_tipo[0]);
+    carga_linechart(tot_tipo[0]);
+
+}
+
+
+function carga_linechart(tot_tipo){
+    totales = Object.fromEntries(
+        Object.entries(tot_tipo).sort(([, valueA], [, valueB]) => valueB - valueA)
+    );
+    keys = Object.keys(totales);
+    values = Object.values(totales);
+
+    labels = [];
+    tot_ene = []; tot_feb = []; tot_mar = []; tot_abr = []; tot_may = []; tot_jun = []; tot_jul = [] ;tot_ago = [];
+    tot_sep = []; tot_oct = []; tot_nov = []; tot_dic = [];
+
+    for(v=0; v<keys.length; v++){
+        labels[v] = keys[v];
+        for(vv=0; vv<json_reclamos_now.length;vv++){
+            mes = json_reclamos_now[vv].fechahora.substring(5,7);
+            if( mes == '01' && json_reclamos_now[vv].tipo == labels[v] ){tot_ene.push(json_reclamos_now[vv])}
+            if( mes == '02' && json_reclamos_now[vv].tipo == labels[v] ){tot_feb.push(json_reclamos_now[vv])}
+            if( mes == '03' && json_reclamos_now[vv].tipo == labels[v] ){tot_mar.push(json_reclamos_now[vv])}
+            if( mes == '04' && json_reclamos_now[vv].tipo == labels[v] ){tot_abr.push(json_reclamos_now[vv])}
+            if( mes == '05' && json_reclamos_now[vv].tipo == labels[v] ){tot_may.push(json_reclamos_now[vv])}
+            if( mes == '06' && json_reclamos_now[vv].tipo == labels[v] ){tot_jun.push(json_reclamos_now[vv])}
+            if( mes == '07' && json_reclamos_now[vv].tipo == labels[v] ){tot_jul.push(json_reclamos_now[vv])}
+            if( mes == '08' && json_reclamos_now[vv].tipo == labels[v] ){tot_ago.push(json_reclamos_now[vv])}
+            if( mes == '09' && json_reclamos_now[vv].tipo == labels[v] ){tot_sep.push(json_reclamos_now[vv])}
+            if( mes == '10' && json_reclamos_now[vv].tipo == labels[v] ){tot_oct.push(json_reclamos_now[vv])}
+            if( mes == '11' && json_reclamos_now[vv].tipo == labels[v] ){tot_nov.push(json_reclamos_now[vv])}
+            if( mes == '12' && json_reclamos_now[vv].tipo == labels[v] ){tot_dic.push(json_reclamos_now[vv])}
+        }
+    }
+
+
+    const ctx = document.getElementById('linechart');
+    Chart.defaults.color = "#fff"
+    LChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+        labels: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN','JUL','AGO','SEP','OCT','NOV','DIC'],
+        datasets: [{
+            label: "Reclamos",
+            data: [tot_ene.length, tot_feb.length, tot_mar.length, tot_abr.length, tot_may.length, tot_jun.length, tot_jun.length, tot_jul.length, tot_ago.length, tot_sep.length, tot_oct.length, tot_nov.length, tot_dic.length],
+            borderWidth: 1,
+            scaleLineColor: "#999",
+            scaleGridLineColor: "rgba(255,255,255,.08)",
+            scaleFontSize: "8",
+            scaleFontColor: "rgba(255,255,255,0.3)"
+        }]
+        }
+    });
+}
+
+function carga_donutchart(tot_tipo){
+    totales = Object.fromEntries(
+        Object.entries(tot_tipo).sort(([, valueA], [, valueB]) => valueB - valueA)
+    );
+    keys = Object.keys(totales);
+    values = Object.values(totales);
+
+
+    labels = keys;
+    values = values;
+
+    let ctx = document.getElementById('dona');
+    var data = {
+        labels: labels,
+        datasets: [{
+            label: "Reclamos",
+            labels: labels,
+            data: values,
+            borderWidth: 1,
+            borderColor: "#fff",
+            backgroundColor: graph_colors,
+            hoverOffset: 4
+        }]
+    };
+
+    DChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: {
+            cutout: 80, // Sets the inner radius to 50 pixels
+            layout: {
+                padding: {
+                    left: 0,  // Padding on the left side
+                    right: 0, // Padding on the right side
+                    top: 0,   // Padding on the top side
+                    bottom: 10 // Padding on the bottom side
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: "RECLAMOS POR TIPO"
+                },
+                legend: {
+                    labels: {
+                        boxWidth: 15,
+                        font: {
+                            size: 10, // Set your desired font size here
+                            weight: 'lighter'
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+
+    
+
+}
+
+
+function filtro(){
+    if(document.getElementById("agno").value != "0"){
+        agno = document.getElementById("agno").value
+        json_reclamos_now = json_reclamos.filter( (item) => item.fechahora.substring(0,4) == agno?item:null)
+    }else{
+        json_reclamos_now = json_reclamos;
+    }
+    if(DChart){DChart.destroy()};
+    if(LChart){LChart.destroy()};
+
+    html = '<table class="tabla_datos">';
+    html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th></tr>';
+    data = json_reclamos_now;
+    for(v=0;v<data.length;v++){
+        //console.log("data: " + JSON.stringify(data[v].id))
+        html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td></tr>';
+    }
+    html += '</table>';
+    
+    document.getElementById("datos").innerHTML = html;
+
+    llena_datos();
+
+}
+
+
+
+
+</script>
