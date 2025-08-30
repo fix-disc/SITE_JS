@@ -35,6 +35,21 @@ async function get_reclamos(id){
     return data; 
 }
 
+async function get_departamentos(){
+    url = base_url + "departamentos.php";
+    let response = await fetch(url);
+    let data = await response.json();
+    return data; 
+}
+
+async function get_reclamos_filtro(filtro){
+    url = base_url + "reclamos.php?filtro=" + filtro;
+    console.log("URL: " + url);
+    let response = await fetch(url);
+    let data = await response.json();
+    return data; 
+}
+
 async function get_reclamos_agno(agno){
     url = base_url + "reclamos.php?agno=" + agno;
     alert(url)

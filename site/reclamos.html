@@ -12,19 +12,35 @@
         
         <script src="../js/behaviour.js"></script>
     </head>
-    <body onload="busca_reclamos()">
-        <div id="contenido1" class="contenido1" onmousedown="hide_all()">
-            <label for="agno">AÑO</label><br>
-            <select id="agno" onchange="filtro_agno(this.value)">
-                <option value="0">Todos</option>
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-                <option value="2023">2023</option>
-                <option value="2022">2022</option>
-            </select>&nbsp;&nbsp;TOTAL: <span id="total"></span><br><br>
+    <body onload="busca_reclamos();carga_tipos();carga_departamentos();">
+        <div id="contenido1" class="contenido1" style="width: 100%;" onmousedown="hide_all()">
+            <div style="float: left;">
+                 <label for="agno">AÑO</label><br>
+                <select id="agno" onchange="filtros(this.value)">
+                    <option value="0">Todos</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                </select>
+            </div>
+            <div style="float: left;">
+                <label for="tipo">TIPOS</label><br>
+                <select id="tipo" onchange="filtros(this.value)">
+                    <option value="0">Todos</option>
+                </select>
+            </div>
+            <div style="float: left;">
+                <label for="departamento">DEPTOS.</label><br>
+                <select id="departamento" onchange="filtros(this.value)">
+                    <option value="0">Todos</option>
+                </select>
+            </div>
+           <br><br><br>&nbsp;&nbsp;TOTAL: <span id="total"></span><br><br>
             <div id="datos">
 
             </div>
+
         </div>
     </body>
 </html>
@@ -38,11 +54,12 @@ async function busca_reclamos(){
             json_reclamos = res;
             console.log("RECLAMOS: " + JSON.stringify(res))
             html = '<table class="tabla_datos">';
-            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th></tr>';
+            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th><th class="th1">OBSERVACIONES</th><th class="th1">ESTADO</th></tr>';
             data = res;
             for(v=0;v<data.length;v++){
                 //console.log("data: " + JSON.stringify(data[v].id))
-                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td></tr>';
+                if (data[v].estado=="INGRESADO"){estado_color = "#6b581c";}else{estado_color = "";}
+                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td><td class"td1" style="text-align:left">' + data[v].observaciones + '</td><td class"td1" style="background-color:' + estado_color + '">' + data[v].estado + '</td></tr>';
             }
             html += '</table>';
            
@@ -51,6 +68,32 @@ async function busca_reclamos(){
         }
     )
 
+}
+
+function carga_tipos(){
+    get_tipo_reclamo().then(
+        function(res){
+            console.log("TIPOS: " + JSON.stringify(res))
+            html = '<option value="0">Todos</option>';
+            for(v=0;v<res.length;v++){
+                html += '<option value="' + res[v].id + '">' + res[v].nombre + '</option>';
+            }
+            document.getElementById("tipo").innerHTML = html;
+        }
+    )
+}
+
+function carga_departamentos(){
+    get_departamentos().then(
+        function(res){
+            console.log("DEPARTAMENTOS: " + JSON.stringify(res))
+            html = '<option value="0">Todos</option>';
+            for(v=0;v<res.length;v++){
+                html += '<option value="' + res[v].departamento + '">' + res[v].departamento + '</option>';
+            }
+            document.getElementById("departamento").innerHTML = html;
+        }
+    )
 }
 
 function filtro_agno(agno){
@@ -68,6 +111,33 @@ function filtro_agno(agno){
 
     document.getElementById("datos").innerHTML = html;
     document.getElementById("total").innerHTML = data.length;
+}
+
+
+async function filtros(){
+    if(document.getElementById("agno").value!="0"){f1 = document.getElementById("agno").value;}else{f1 = "0";} 
+    if(document.getElementById("tipo").value!="0"){f2 = document.getElementById("tipo").value;}else{f2 = "0";}
+    if(document.getElementById("departamento").value!="0"){f3 = document.getElementById("departamento").value;}else{f3 = "0";}
+    params = f1+","+f2+","+f3;
+    await get_reclamos_filtro(params).then(
+        function(res){
+            json_reclamos = res;
+            //console.log("RECLAMOS: " + JSON.stringify(res))
+            html = '<table class="tabla_datos">';
+            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th><th class="th1">OBSERVACIONES</th><th class="th1">ESTADO</th></tr>';
+            data = res;
+            for(v=0;v<data.length;v++){
+                //console.log("data: " + JSON.stringify(data[v].id))
+                if (data[v].estado=="INGRESADO"){estado_color = "#6b581c";}else{estado_color = "";}
+                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td><td class"td1" style="text-align:left">' + data[v].observaciones + '</td><td class"td1" style="background-color:' + estado_color + '">' + data[v].estado + '</td></tr>';
+            }
+            html += '</table>';
+           
+            document.getElementById("datos").innerHTML = html;
+            document.getElementById("total").innerHTML = data.length;
+        }
+    )
+
 }
 
 
