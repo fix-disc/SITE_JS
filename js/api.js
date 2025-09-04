@@ -24,6 +24,32 @@ async function post_reclamo(reclamo){
     return data; 
 }
 
+async function post_observaciones(id, obs){
+    url = base_url
+    url = base_url + "observaciones.php";
+    var data1 = {id: id, obs: obs};
+    options={
+        method:"POST",
+        body: JSON.stringify(data1)
+    };
+    let response = await fetch(url, options);
+    let data = await response.json();
+    return data; 
+}
+
+async function del_observaciones(id){
+    url = base_url
+    url = base_url + "observaciones.php";
+    var data1 = {id: id};
+    options={
+        method:"DELETE",
+        body: JSON.stringify(data1)
+    };
+    let response = await fetch(url, options);
+    let data = await response.json();
+    return data; 
+}
+
 async function get_reclamos(id){
     if(id!=""){
         url = base_url + "reclamos.php?id=" + id;

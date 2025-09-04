@@ -83,7 +83,7 @@
 
                     <div id="close" class="close" onclick="close_1('modal1')"><img src="../img/close_icon.png" width="20px" height="20px"></div>
                     <div class="title" style="width: 100%;">
-                        <i class="fa fa-cog" style="font-size: 1.4rem;"><span>&nbsp;&nbsp;Configuración</span></i>
+                        <i class="fa fa-cog" style="font-size: 1.4rem;"><span>&nbsp;&nbsp;OBSERVACIONES</span></i>
                     </div>
                     <div class="line" style="position: relative; width: 100%; margin-top:5px;"></div>
                     <div class="line0" style="position: relative; width: 100%;"></div>
@@ -94,16 +94,10 @@
 
                         <table width="100%">
                             <tr>
-                                <td width="30%" style="max-width: 100px; vertical-align: text-top;">
-                                    <div class="title2_menu" onclick="load_div('cfg_content','cfg_general.html')"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp;General</div>
-                                    <div class="title2_menu" onclick="load_div('cfg_content','cfg_canales.html'); load_cfgcanales();"><i class="fa fa-rss" aria-hidden="true"></i>&nbsp;&nbsp;Canales</div>
-                                    <div class="title2_menu" onclick="load_div('cfg_content','cfg_canales.html')"><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp;&nbsp;Horarios</div>
-                                </td>
                                 <td>
                                     <div id="cfg_content" style="width: 100%; max-height: 260px; float:left; overflow: auto; overflow-y: scroll; padding-right: 20px;">
-                                        <div>
-                                            Selecciona una opción
-                                        </div>
+                                        <textarea id="observaciones" width="100%" rows="16" style="width: 100%; max-height: 260px; float:left; overflow: auto; overflow-y: scroll; padding-right: 20px; background-color: #68696b; color:#fff"></textarea>   
+                                        <input type="hidden" id="sel_reclamo" value="">
                                     </div>
                                 </td>
                             </tr>
@@ -113,12 +107,51 @@
                     <div id="mod_footer" class="mod_footer" style="position: absolute;">
                         <div class="line" style="position: relative; width: 100%;"></div>
                         <div class="line0" style="position: relative; width: 100%;margin-bottom: 15px;"></div>
-                        <div class="bot_save">GUARDAR</div>
+                        <div class="bot_save" onclick="guarda_observaciones()">GUARDAR</div>
                         <div class="bot_cancel" onclick="close_1('modal1')">CANCELAR</div>
                     </div>
 
                 </div>
             </div>
+
+            <!-- MODAL 2 -->
+            <div id="modal2" class="modal1">
+                <div style="height: 100%; display: contents;">
+
+                    <div id="close" class="close" onclick="close_1('modal2')"><img src="../img/close_icon.png" width="20px" height="20px"></div>
+                    <div class="title" style="width: 100%;">
+                        <i class="fa fa-cog" style="font-size: 1.4rem;"><span>&nbsp;&nbsp;OBSERVACIONES</span></i>
+                    </div>
+                    <div class="line" style="position: relative; width: 100%; margin-top:5px;"></div>
+                    <div class="line0" style="position: relative; width: 100%;"></div>
+                    <div style="width: 100%; height: 10px;"></div>
+
+                    
+                    <div style="width: 100%; height: 20px; display: block;">
+
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <div id="cfg_content" style="width: 100%; max-height: 260px; float:left; overflow: auto; overflow-y: scroll; padding-right: 20px;">
+                                        <textarea id="observaciones" width="100%" rows="16" style="width: 100%; max-height: 260px; float:left; overflow: auto; overflow-y: scroll; padding-right: 20px; background-color: #68696b; color:#fff"></textarea>   
+                                        <input type="hidden" id="sel_reclamo" value="">
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+                    <div id="mod_footer" class="mod_footer" style="position: absolute;">
+                        <div class="line" style="position: relative; width: 100%;"></div>
+                        <div class="line0" style="position: relative; width: 100%;margin-bottom: 15px;"></div>
+                        <div class="bot_mod" onclick="modifica_observaciones()">MODIFICAR</div>
+                        <div class="bot_cancel" onclick="close_1('modal2')">CANCELAR</div>
+                    </div>
+
+                </div>
+            </div>
+
+
         </div>
 
         <!-- MODAL PHONE -->
@@ -138,6 +171,49 @@ async function muestra_usuario(){
     document.getElementById("apellidop").innerHTML = sessionStorage.getItem("apellidop")
 
 }
+
+async function guarda_observaciones(){
+    var obs = parent.document.getElementById("observaciones").value;
+    var id = parent.document.getElementById("sel_reclamo").value;
+    console.log("OBSERVACIONES: " + obs);
+    // Aquí puedes agregar la lógica para enviar las observaciones al servidor
+
+    await post_observaciones(id, obs).then(
+        function(res){
+            console.log("RESPONSE: " + JSON.stringify(res));
+            if(res.message == 'Reclamo modificado'){
+                abre_pag('reclamos.html');
+                alert("Observaciones guardadas correctamente");
+                parent.document.getElementById("modal1").style.display = "none";
+            }else{
+                alert("Error al guardar observaciones");
+            }
+            
+        }
+    );
+}
+
+async function modifica_observaciones(){
+    var obs = parent.document.getElementById("observaciones").value;
+    var id = parent.document.getElementById("sel_reclamo").value;
+    console.log("OBSERVACIONES: " + obs);
+    // Aquí puedes agregar la lógica para enviar las observaciones al servidor
+
+    await mod_observaciones(id, obs).then(
+        function(res){
+            console.log("RESPONSE: " + JSON.stringify(res));
+            if(res.message == 'Reclamo modificado'){
+                abre_pag('reclamos.html');
+                alert("Observaciones guardadas correctamente");
+                parent.document.getElementById("modal1").style.display = "none";
+            }else{
+                alert("Error al guardar observaciones");
+            }
+            
+        }
+    );
+}
+
 
 
 </script>

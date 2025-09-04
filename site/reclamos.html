@@ -53,13 +53,23 @@ async function busca_reclamos(){
         function(res){
             json_reclamos = res;
             console.log("RECLAMOS: " + JSON.stringify(res))
-            html = '<table class="tabla_datos">';
-            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th><th class="th1">OBSERVACIONES</th><th class="th1">ESTADO</th></tr>';
+            html = '<table class="tabla_datos" style="user-select: text; -webkit-user-select: text; -moz-user-select: text;">';
+            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th><th class="th1">OBSERVACIONES</th><th class="th1">ACCIONES</th><th class="th1">ESTADO</th></tr>';
             data = res;
             for(v=0;v<data.length;v++){
                 //console.log("data: " + JSON.stringify(data[v].id))
                 if (data[v].estado=="INGRESADO"){estado_color = "#6b581c";}else{estado_color = "";}
-                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td><td class"td1" style="text-align:left">' + data[v].observaciones + '</td><td class"td1" style="background-color:' + estado_color + '">' + data[v].estado + '</td></tr>';
+                let obs = "";
+                let acciones = "";
+                if(data[v].observaciones == ""){
+                    obs = '<div class="bot_save" onclick="ingresa_obs(' + data[v].id + ')">INGRESAR</div>';
+                    acciones = '';
+                }else{
+                    obs = data[v].observaciones;
+                    acciones = '<div class="bot_cancel" style="width:25px;display:inline-block;text-align:center;margin:auto;cursor:pointer;" title="Eliminar" onclick="elimina_obs(' + data[v].id + ')">X</div>';
+                    acciones += '<div class="bot_save" style="width:25px;display:inline-block;text-align:center;margin:auto;cursor:pointer;margin-left:5px;background:#a17806;" title="Modificar" onclick="modifica_obs(' + data[v].id + ')"><i class="fa fa-pencil" style="color:#fff;"></i></div>';
+                }
+                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td><td class"td1" style="text-align:left">' + obs + '</td><td class"td1">' + acciones + '</td><td class"td1" style="background-color:' + estado_color + '">' + data[v].estado + '</td></tr>';
             }
             html += '</table>';
            
@@ -129,7 +139,8 @@ async function filtros(){
             for(v=0;v<data.length;v++){
                 //console.log("data: " + JSON.stringify(data[v].id))
                 if (data[v].estado=="INGRESADO"){estado_color = "#6b581c";}else{estado_color = "";}
-                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td><td class"td1" style="text-align:left">' + data[v].observaciones + '</td><td class"td1" style="background-color:' + estado_color + '">' + data[v].estado + '</td></tr>';
+                if(data[v].observaciones == ""){obs = '<div class="bot_save" onclick="ingresa_obs()">INGRESAR</div>';}else{obs = data[v].observaciones;}
+                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td><td class"td1" style="text-align:left">' + obs + '</td><td class"td1" style="background-color:' + estado_color + '">' + data[v].estado + '</td></tr>';
             }
             html += '</table>';
            
@@ -139,6 +150,33 @@ async function filtros(){
     )
 
 }
+
+function ingresa_obs(id){
+    parent.document.getElementById("modal1").style.display = "block";
+    parent.document.getElementById("sel_reclamo").value = id;
+}
+
+
+
+function modifica_obs(id){
+    parent.document.getElementById("modal2").style.display = "block";
+    parent.document.getElementById("sel_reclamo").value = id;
+}
+
+async function elimina_obs(id){
+    if(!confirm("¿Confirma eliminar observación?")){return;}
+    await del_observaciones(id).then(
+        function(res){
+            if(res.message=="Observacion eliminada"){
+                alert("Observación eliminada");
+                busca_reclamos();
+            }else{
+                alert("Error al eliminar observación");
+            }
+        }
+    )
+}
+
 
 
 </script>
