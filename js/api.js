@@ -61,6 +61,19 @@ async function get_reclamos(id){
     return data; 
 }
 
+async function mod_reclamos(id, estado){
+    url = base_url + "reclamos.php";
+    var data1 = {id: id, estado: estado};
+     options={
+        method:"POST",
+        body: JSON.stringify(data1)
+    };
+    let response = await fetch(url, options);
+    console.log("response: " + JSON.stringify(response));
+    let data = await response.json();
+    return data; 
+}
+
 async function get_departamentos(){
     url = base_url + "departamentos.php";
     let response = await fetch(url);

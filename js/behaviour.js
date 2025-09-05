@@ -143,8 +143,8 @@ function hide_all(){
     menu2 = parent.document.getElementById('menu2');
     modal1 = parent.document.getElementById('modal1');
     modal2 = parent.document.getElementById('modal2');
-    menu1.style.display = "none";
-    menu2.style.display = "none";
-    modal1.style.display = "none";
-    modal2.style.display = "none";
+    if (menu1 && menu1.style) menu1.style.display = "none";
+    if (menu2 && menu2.style) menu2.style.display = "none";
+    if (modal1 && modal1.style) modal1.style.display = "none";
+    if (modal2 && modal2.style) modal2.style.display = "none";
 }

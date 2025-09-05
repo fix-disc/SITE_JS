@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
     <head>
+<style>
+.tabla_datos td, .tabla_datos th {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+</style>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -58,7 +66,10 @@ async function busca_reclamos(){
             data = res;
             for(v=0;v<data.length;v++){
                 //console.log("data: " + JSON.stringify(data[v].id))
-                if (data[v].estado=="INGRESADO"){estado_color = "#6b581c";}else{estado_color = "";}
+                if (data[v].estado=="INGRESADO"){estado_color = "#ff9800";}
+                else if (data[v].estado=="EN CURSO"){estado_color = "#6b581c";}
+                else if (data[v].estado=="CERRADO"){estado_color = "#a13a06";}
+                else{estado_color = "";}
                 let obs = "";
                 let acciones = "";
                 if(data[v].observaciones == ""){
@@ -69,7 +80,102 @@ async function busca_reclamos(){
                     acciones = '<div class="bot_cancel" style="width:25px;display:inline-block;text-align:center;margin:auto;cursor:pointer;" title="Eliminar" onclick="elimina_obs(' + data[v].id + ')">X</div>';
                     acciones += '<div class="bot_save" style="width:25px;display:inline-block;text-align:center;margin:auto;cursor:pointer;margin-left:5px;background:#a17806;" title="Modificar" onclick="modifica_obs(' + data[v].id + ')"><i class="fa fa-pencil" style="color:#fff;"></i></div>';
                 }
-                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td><td class"td1" style="text-align:left">' + obs + '</td><td class"td1">' + acciones + '</td><td class"td1" style="background-color:' + estado_color + '">' + data[v].estado + '</td></tr>';
+                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td><td class"td1" style="text-align:left">' + obs + '</td><td class"td1">' + acciones + '</td><td class="td1 estado-reclamo" data-id="' + data[v].id + '" data-estado="' + data[v].estado + '" data-bg="' + estado_color + '" style="background-color:' + (estado_color ? estado_color : '#333') + ';color:#fff;cursor:pointer;text-align:center;">' + data[v].estado + '</td></tr>';
+// Evento delegación para activar el selector de estado en la celda (fuera del bucle)
+setTimeout(function() {
+    document.removeEventListener('click', window._estadoReclamoClick);
+    window._estadoReclamoClick = function(e) {
+        if(e.target.classList.contains('estado-reclamo')) {
+            const td = e.target;
+            const id = td.getAttribute('data-id');
+            const estadoActual = td.getAttribute('data-estado');
+            const estados = ['INGRESADO','EN CURSO','CERRADO'];
+            let select = document.createElement('select');
+            // Obtener color de fondo de la página
+            let pageBg = window.getComputedStyle(document.body).backgroundColor;
+            select.style.background = pageBg;
+            select.style.color = '#fff';
+            select.style.border = '1px solid #888';
+            select.style.borderRadius = '4px';
+                                setTimeout(function() {
+                                    document.removeEventListener('click', window._estadoReclamoClick);
+                                    window._estadoReclamoClick = function(e) {
+                                        if(e.target.classList.contains('estado-reclamo')) {
+                                            const td = e.target;
+                                            const id = td.getAttribute('data-id');
+                                            const estadoActual = td.getAttribute('data-estado');
+                                            const estados = ['INGRESADO','EN CURSO','CERRADO'];
+                                            let select = document.createElement('select');
+                                            let pageBg = window.getComputedStyle(document.body).backgroundColor;
+                                            select.style.background = pageBg;
+                                            select.style.color = '#fff';
+                                            select.style.border = '1px solid #888';
+                                            select.style.borderRadius = '4px';
+                                            select.style.padding = '2px 6px';
+                                            select.style.fontSize = window.getComputedStyle(td).fontSize;
+                                            estados.forEach(e => {
+                                                let opt = document.createElement('option');
+                                                opt.value = e;
+                                                opt.textContent = e;
+                                                if(e === estadoActual) opt.selected = true;
+                                                select.appendChild(opt);
+                                            });
+                                            for (let i = 0; i < select.options.length; i++) {
+                                                select.options[i].style.fontSize = select.style.fontSize;
+                                            }
+                                            td.innerHTML = '';
+                                            td.appendChild(select);
+                                            select.focus();
+                                            select.addEventListener('blur', function() {
+                                                td.innerHTML = select.value;
+                                                td.setAttribute('data-estado', select.value);
+                                                td.style.backgroundColor = td.getAttribute('data-bg') || '#333';
+                                            });
+                                            select.addEventListener('change', function() {
+                                                if(select.value !== estadoActual) {
+                                                    mod_estado_reclamo(id, select.value).then(function(res){
+                                                        if(res.message=="Estado actualizado"){
+                                                            busca_reclamos();
+                                                        }else{
+                                                            alert("Error al actualizar estado");
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    };
+                                    document.addEventListener('click', window._estadoReclamoClick);
+                                }, 100);
+            estados.forEach(e => {
+                let opt = document.createElement('option');
+                opt.value = e;
+                opt.textContent = e;
+                if(e === estadoActual) opt.selected = true;
+                select.appendChild(opt);
+            });
+            td.innerHTML = '';
+            td.appendChild(select);
+            select.focus();
+            select.addEventListener('blur', function() {
+                td.innerHTML = select.value;
+                td.setAttribute('data-estado', select.value);
+                td.style.backgroundColor = td.getAttribute('data-bg') || '#333';
+            });
+            select.addEventListener('change', function() {
+                if(select.value !== estadoActual) {
+                    mod_estado_reclamo(id, select.value).then(function(res){
+                        if(res.message=="Estado actualizado"){
+                            busca_reclamos();
+                        }else{
+                            alert("Error al actualizar estado");
+                        }
+                    });
+                }
+            });
+        }
+    };
+    document.addEventListener('click', window._estadoReclamoClick);
+}, 100);
             }
             html += '</table>';
            
@@ -132,22 +238,86 @@ async function filtros(){
     await get_reclamos_filtro(params).then(
         function(res){
             json_reclamos = res;
-            //console.log("RECLAMOS: " + JSON.stringify(res))
             html = '<table class="tabla_datos">';
-            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th><th class="th1">OBSERVACIONES</th><th class="th1">ESTADO</th></tr>';
+            html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th><th class="th1">OBSERVACIONES</th><th class="th1">ACCIONES</th><th class="th1">ESTADO</th></tr>';
             data = res;
             for(v=0;v<data.length;v++){
-                //console.log("data: " + JSON.stringify(data[v].id))
-                if (data[v].estado=="INGRESADO"){estado_color = "#6b581c";}else{estado_color = "";}
-                if(data[v].observaciones == ""){obs = '<div class="bot_save" onclick="ingresa_obs()">INGRESAR</div>';}else{obs = data[v].observaciones;}
-                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td><td class"td1" style="text-align:left">' + obs + '</td><td class"td1" style="background-color:' + estado_color + '">' + data[v].estado + '</td></tr>';
+                let estado_color = "";
+                if (data[v].estado=="INGRESADO"){estado_color = "#ff9800";}
+                else if (data[v].estado=="EN CURSO"){estado_color = "#6b581c";}
+                else if (data[v].estado=="CERRADO"){estado_color = "#a13a06";}
+                let obs = "";
+                let acciones = "";
+                if(data[v].observaciones == ""){
+                    obs = '<div class="bot_save" onclick="ingresa_obs(' + data[v].id + ')">INGRESAR</div>';
+                    acciones = '';
+                }else{
+                    obs = data[v].observaciones;
+                    acciones = '<div class="bot_cancel" style="width:25px;display:inline-block;text-align:center;margin:auto;cursor:pointer;" title="Eliminar" onclick="elimina_obs(' + data[v].id + ')">X</div>';
+                    acciones += '<div class="bot_save" style="width:25px;display:inline-block;text-align:center;margin:auto;cursor:pointer;margin-left:5px;background:#a17806;" title="Modificar" onclick="modifica_obs(' + data[v].id + ')"><i class="fa fa-pencil" style="color:#fff;"></i></div>';
+                }
+                html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td><td class"td1" style="text-align:left">' + obs + '</td><td class"td1">' + acciones + '</td><td class="td1 estado-reclamo" data-id="' + data[v].id + '" data-estado="' + data[v].estado + '" data-bg="' + estado_color + '" style="background-color:' + (estado_color ? estado_color : '#333') + ';color:#fff;cursor:pointer;text-align:center;">' + data[v].estado + '</td></tr>';
             }
             html += '</table>';
-           
             document.getElementById("datos").innerHTML = html;
             document.getElementById("total").innerHTML = data.length;
+            // Evento delegación para activar el selector de estado en la celda
+            setTimeout(function() {
+                document.removeEventListener('click', window._estadoReclamoClick);
+                window._estadoReclamoClick = function(e) {
+                    if(e.target.classList.contains('estado-reclamo')) {
+                        const td = e.target;
+                        const id = td.getAttribute('data-id');
+                        const estadoActual = td.getAttribute('data-estado');
+                        const estados = ['INGRESADO','EN CURSO','CERRADO'];
+                        let select = document.createElement('select');
+                        let pageBg = window.getComputedStyle(document.body).backgroundColor;
+                        select.style.background = pageBg;
+                        select.style.color = '#fff';
+                        select.style.border = '1px solid #888';
+                        select.style.borderRadius = '4px';
+                        select.style.padding = '2px 6px';
+                        select.style.fontSize = window.getComputedStyle(td).fontSize;
+                        estados.forEach(e => {
+                            let opt = document.createElement('option');
+                            opt.value = e;
+                            opt.textContent = e;
+                            if(e === estadoActual) opt.selected = true;
+                            select.appendChild(opt);
+                        });
+                        for (let i = 0; i < select.options.length; i++) {
+                            select.options[i].style.fontSize = select.style.fontSize;
+                        }
+                        td.innerHTML = '';
+                        td.appendChild(select);
+                        select.focus();
+                        select.addEventListener('blur', function() {
+                            td.innerHTML = select.value;
+                            td.setAttribute('data-estado', select.value);
+                            let color = '';
+                            if(select.value=="INGRESADO"){color="#ff9800";}
+                            else if(select.value=="EN CURSO"){color="#6b581c";}
+                            else if(select.value=="CERRADO"){color="#a13a06";}
+                            else{color="#333";}
+                            td.style.backgroundColor = color;
+                        });
+                        select.addEventListener('change', function() {
+                            if(select.value !== estadoActual) {
+                                mod_estado_reclamo(id, select.value).then(function(res){
+                                    if(res.message=="Estado modificado"){
+                                        busca_reclamos();
+                                    }else{
+                                        alert("Error al modificar el estado");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                };
+                document.addEventListener('click', window._estadoReclamoClick);
+            }, 100);
         }
-    )
+    );
 
 }
 
@@ -177,6 +347,18 @@ async function elimina_obs(id){
     )
 }
 
-
+async function mod_estado_reclamo(id, estado) {
+    await mod_reclamos(id, estado).then(
+        function(res){
+            console.log("RES: " + JSON.stringify(res)) ;
+            if(res.message=="Estado modificado"){
+                alert("Estado modificado");
+                busca_reclamos();
+            }else{
+                alert("Error al modificar el estado");
+            }
+        }
+    );
+}
 
 </script>

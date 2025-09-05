@@ -6,6 +6,14 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>LIBRO QUEJAS</title>
         <link id="css" rel="stylesheet" href="../css/style.css">
+        <style>
+        .tabla_datos td, .tabla_datos th {
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+        }
+        </style>
         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
         
@@ -83,17 +91,30 @@ LChart = "";
 async function busca_reclamos(){
     await get_reclamos("").then(
         function(res){
-            json_reclamos_now = json_reclamos = res;            
-            //console.log("RECLAMOS: " + JSON.stringify(res))
+            json_reclamos = res;
+            // Obtener año y mes actual
+            let fechaActual = new Date();
+            let agnoActual = fechaActual.getFullYear().toString();
+            let mesActual = (fechaActual.getMonth()+1).toString().padStart(2,'0');
+            // Filtrar reclamos por año y mes actual
+            json_reclamos_now = json_reclamos.filter(item => {
+                let cumpleAgno = (item.fechahora.substring(0,4) === agnoActual);
+                let cumpleMes = (item.fechahora.substring(5,7) === mesActual);
+                return cumpleAgno && cumpleMes;
+            });
+            // Inicializar selectores después de cargar datos
+            setTimeout(() => {
+                if(document.getElementById("agno")) document.getElementById("agno").value = agnoActual;
+                if(document.getElementById("mes")) document.getElementById("mes").value = mesActual;
+            }, 100);
+            // Renderizar tabla filtrada
             html = '<table class="tabla_datos">';
             html += '<tr><th class="th1">ID</th><th class="th1">FECHA</th><th class="th1">HORA</th><th class="th1">USUARIO</th><th class="th1">DEPTO.</th><th class="th1">TIPO</th><th class="th1">RECLAMO</th></tr>';
-            data = res;
+            data = json_reclamos_now;
             for(v=0;v<data.length;v++){
-                //console.log("data: " + JSON.stringify(data[v].id))
                 html += '<tr><td class"td1">' + data[v].id + '</td><td class"td1">' + data[v].fechahora.split(" ")[0] + '</td><td class"td1">' + data[v].fechahora.split(" ")[1] + '<td class"td1">' + data[v].usuario + '</td><td class"td1">' + data[v].departamento + '</td></td><td class"td1">' + data[v].tipo + '</td><td class"td1" style="text-align:left">' + data[v].texto + '</td></tr>';
             }
             html += '</table>';
-           
             document.getElementById("datos").innerHTML = html;
             llena_datos();
         }
@@ -119,23 +140,19 @@ async function tipo_reclamos(){
 
 function llena_datos(){
 
-    html= '<label for="agno">AÑO</label><br>'
-    html+= '<select id="agno" onchange="filtro()">';
-    html+= '<option value="0" selected >Todos</option>';
-
+    html = '<div style="display: flex; align-items: center; gap: 20px; margin-bottom: 10px;">';
+    html += '<div><label for="agno">AÑO</label><br>';
+    html += '<select id="agno" onchange="filtro()" style="margin-right:10px;">';
+    html += '<option value="0" selected >Todos</option>';
     for(v=0;v<json_reclamos.length;v++){
-        // LLENA AÑOS DISTINCT
         if(agnos.indexOf(json_reclamos[v].fechahora.substring(0,4)) == -1){
             agno = json_reclamos[v].fechahora.substring(0,4);
             agnos.push(agno)
         }
-        
-        //LLENA TIPOS RECLAMO DISTINCT
         if(tipos_reclamo.indexOf(json_reclamos[v].tipo) == -1){
             tipos_reclamo.push(json_reclamos[v].tipo);
         }
     }
-    
     for (v=0; v<agnos.length; v++){
         sele = "";
         agno = agnos[v];
@@ -147,11 +164,23 @@ function llena_datos(){
         html+='<option value="' + agno + '" ' + sele + '>' + agno + '</option>';
     }
     html+='</select>';
-    html+='&nbsp;&nbsp;TOTAL: <span id="total"></span><br><br>';
-    
+    html+='&nbsp;&nbsp;TOTAL: <span id="total"></span>';
+    html += '</div>';
+
+    html += '<div><label for="mes">MES</label><br>';
+    let mesActual = document.getElementById("mes") ? document.getElementById("mes").value : "0";
+    html += '<select id="mes" onchange="filtro()" style="margin-right:10px;">';
+    html += `<option value="0"${mesActual=="0"?" selected":""}>Todos</option>`;
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    for(let i=0;i<12;i++){
+        let val = (i+1).toString().padStart(2,'0');
+        html += `<option value="${val}"${mesActual==val?" selected":""}>${meses[i]}</option>`;
+    }
+    html += '</select></div>';
+    html += '</div>';
     document.getElementById("agnos").innerHTML= html;
     document.getElementById("total").innerHTML = json_reclamos_now.length;
-    
+
     var tot_tipo = [];
     for(v=0; v<tipos_reclamo.length; v++){
         tot_tipo[v] = json_reclamos_now.reduce((accumulator, item) => {
@@ -166,53 +195,87 @@ function llena_datos(){
 
 
 function carga_linechart(tot_tipo){
-    totales = Object.fromEntries(
-        Object.entries(tot_tipo).sort(([, valueA], [, valueB]) => valueB - valueA)
-    );
-    keys = Object.keys(totales);
-    values = Object.values(totales);
-
-    labels = [];
-    tot_ene = []; tot_feb = []; tot_mar = []; tot_abr = []; tot_may = []; tot_jun = []; tot_jul = [] ;tot_ago = [];
-    tot_sep = []; tot_oct = []; tot_nov = []; tot_dic = [];
-
-    for(v=0; v<keys.length; v++){
-        labels[v] = keys[v];
-        for(vv=0; vv<json_reclamos_now.length;vv++){
-            mes = json_reclamos_now[vv].fechahora.substring(5,7);
-            if( mes == '01' && json_reclamos_now[vv].tipo == labels[v] ){tot_ene.push(json_reclamos_now[vv])}
-            if( mes == '02' && json_reclamos_now[vv].tipo == labels[v] ){tot_feb.push(json_reclamos_now[vv])}
-            if( mes == '03' && json_reclamos_now[vv].tipo == labels[v] ){tot_mar.push(json_reclamos_now[vv])}
-            if( mes == '04' && json_reclamos_now[vv].tipo == labels[v] ){tot_abr.push(json_reclamos_now[vv])}
-            if( mes == '05' && json_reclamos_now[vv].tipo == labels[v] ){tot_may.push(json_reclamos_now[vv])}
-            if( mes == '06' && json_reclamos_now[vv].tipo == labels[v] ){tot_jun.push(json_reclamos_now[vv])}
-            if( mes == '07' && json_reclamos_now[vv].tipo == labels[v] ){tot_jul.push(json_reclamos_now[vv])}
-            if( mes == '08' && json_reclamos_now[vv].tipo == labels[v] ){tot_ago.push(json_reclamos_now[vv])}
-            if( mes == '09' && json_reclamos_now[vv].tipo == labels[v] ){tot_sep.push(json_reclamos_now[vv])}
-            if( mes == '10' && json_reclamos_now[vv].tipo == labels[v] ){tot_oct.push(json_reclamos_now[vv])}
-            if( mes == '11' && json_reclamos_now[vv].tipo == labels[v] ){tot_nov.push(json_reclamos_now[vv])}
-            if( mes == '12' && json_reclamos_now[vv].tipo == labels[v] ){tot_dic.push(json_reclamos_now[vv])}
+    // Si hay filtro de mes, mostrar por semanas
+    let mesSeleccionado = document.getElementById('mes') ? document.getElementById('mes').value : "0";
+    if(LChart){LChart.destroy();}
+    if(mesSeleccionado !== "0"){
+        // Filtrar reclamos del mes seleccionado
+        let reclamos_mes = json_reclamos_now.filter(r => r.fechahora.substring(5,7) === mesSeleccionado);
+        // Agrupar por semanas del mes seleccionado
+        let semanas = [0,0,0,0];
+        for(let i=0;i<reclamos_mes.length;i++){
+            let fecha = reclamos_mes[i].fechahora;
+            let dia = parseInt(fecha.substring(8,10));
+            if(dia <= 7) semanas[0]++;
+            else if(dia <= 14) semanas[1]++;
+            else if(dia <= 21) semanas[2]++;
+            else semanas[3]++;
         }
+        const ctx = document.getElementById('linechart');
+        Chart.defaults.color = "#fff"
+        LChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['SEM 1', 'SEM 2', 'SEM 3', 'SEM 4'],
+                datasets: [{
+                    label: "Reclamos",
+                    data: semanas,
+                    borderWidth: 1,
+                    scaleLineColor: "#999",
+                    scaleGridLineColor: "rgba(255,255,255,.08)",
+                    scaleFontSize: "8",
+                    scaleFontColor: "rgba(255,255,255,0.3)"
+                }]
+            }
+        });
+    }else{
+        totales = Object.fromEntries(
+            Object.entries(tot_tipo).sort(([, valueA], [, valueB]) => valueB - valueA)
+        );
+        keys = Object.keys(totales);
+        values = Object.values(totales);
+
+        labels = [];
+        tot_ene = []; tot_feb = []; tot_mar = []; tot_abr = []; tot_may = []; tot_jun = []; tot_jul = [] ;tot_ago = [];
+        tot_sep = []; tot_oct = []; tot_nov = []; tot_dic = [];
+
+        for(v=0; v<keys.length; v++){
+            labels[v] = keys[v];
+            for(vv=0; vv<json_reclamos_now.length;vv++){
+                mes = json_reclamos_now[vv].fechahora.substring(5,7);
+                if( mes == '01' && json_reclamos_now[vv].tipo == labels[v] ){tot_ene.push(json_reclamos_now[vv])}
+                if( mes == '02' && json_reclamos_now[vv].tipo == labels[v] ){tot_feb.push(json_reclamos_now[vv])}
+                if( mes == '03' && json_reclamos_now[vv].tipo == labels[v] ){tot_mar.push(json_reclamos_now[vv])}
+                if( mes == '04' && json_reclamos_now[vv].tipo == labels[v] ){tot_abr.push(json_reclamos_now[vv])}
+                if( mes == '05' && json_reclamos_now[vv].tipo == labels[v] ){tot_may.push(json_reclamos_now[vv])}
+                if( mes == '06' && json_reclamos_now[vv].tipo == labels[v] ){tot_jun.push(json_reclamos_now[vv])}
+                if( mes == '07' && json_reclamos_now[vv].tipo == labels[v] ){tot_jul.push(json_reclamos_now[vv])}
+                if( mes == '08' && json_reclamos_now[vv].tipo == labels[v] ){tot_ago.push(json_reclamos_now[vv])}
+                if( mes == '09' && json_reclamos_now[vv].tipo == labels[v] ){tot_sep.push(json_reclamos_now[vv])}
+                if( mes == '10' && json_reclamos_now[vv].tipo == labels[v] ){tot_oct.push(json_reclamos_now[vv])}
+                if( mes == '11' && json_reclamos_now[vv].tipo == labels[v] ){tot_nov.push(json_reclamos_now[vv])}
+                if( mes == '12' && json_reclamos_now[vv].tipo == labels[v] ){tot_dic.push(json_reclamos_now[vv])}
+            }
+        }
+
+        const ctx = document.getElementById('linechart');
+        Chart.defaults.color = "#fff"
+        LChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+            labels: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN','JUL','AGO','SEP','OCT','NOV','DIC'],
+            datasets: [{
+                label: "Reclamos",
+                data: [tot_ene.length, tot_feb.length, tot_mar.length, tot_abr.length, tot_may.length, tot_jun.length, tot_jul.length, tot_ago.length, tot_sep.length, tot_oct.length, tot_nov.length, tot_dic.length],
+                borderWidth: 1,
+                scaleLineColor: "#999",
+                scaleGridLineColor: "rgba(255,255,255,.08)",
+                scaleFontSize: "8",
+                scaleFontColor: "rgba(255,255,255,0.3)"
+            }]
+            }
+        });
     }
-
-
-    const ctx = document.getElementById('linechart');
-    Chart.defaults.color = "#fff"
-    LChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-        labels: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN','JUL','AGO','SEP','OCT','NOV','DIC'],
-        datasets: [{
-            label: "Reclamos",
-            data: [tot_ene.length, tot_feb.length, tot_mar.length, tot_abr.length, tot_may.length, tot_jun.length, tot_jul.length, tot_ago.length, tot_sep.length, tot_oct.length, tot_nov.length, tot_dic.length],
-            borderWidth: 1,
-            scaleLineColor: "#999",
-            scaleGridLineColor: "rgba(255,255,255,.08)",
-            scaleFontSize: "8",
-            scaleFontColor: "rgba(255,255,255,0.3)"
-        }]
-        }
-    });
 }
 
 function carga_donutchart(tot_tipo){
@@ -278,12 +341,13 @@ function carga_donutchart(tot_tipo){
 
 
 function filtro(){
-    if(document.getElementById("agno").value != "0"){
-        agno = document.getElementById("agno").value
-        json_reclamos_now = json_reclamos.filter( (item) => item.fechahora.substring(0,4) == agno?item:null)
-    }else{
-        json_reclamos_now = json_reclamos;
-    }
+    let agnoSel = document.getElementById("agno").value;
+    let mesSel = document.getElementById("mes").value;
+    json_reclamos_now = json_reclamos.filter(item => {
+        let cumpleAgno = (agnoSel === "0" || item.fechahora.substring(0,4) === agnoSel);
+        let cumpleMes = (mesSel === "0" || item.fechahora.substring(5,7) === mesSel);
+        return cumpleAgno && cumpleMes;
+    });
     if(DChart){DChart.destroy()};
     if(LChart){LChart.destroy()};
 
